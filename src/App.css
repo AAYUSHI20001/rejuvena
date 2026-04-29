@@ -1,0 +1,168 @@
+.main-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+
+  font-family: 'Manrope',sans-serif;
+}
+
+.login-box {
+  width: 420px;
+  padding: 40px 35px;
+  border-radius: 20px;
+  text-align: center;
+  background: #ffffff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.text{
+  color: #6d6c6c;
+  font-family: 'Manrope',sans-serif;
+  font-weight: 300;
+}
+.signup-link{
+  color:#222;
+  font-weight: 400;
+}
+.style {
+  font-size: 34px;
+ font-family: 'Manrope',sans-serif;
+  font-weight: 500;
+  color: #222;
+  margin-bottom: 10px;
+}
+
+
+.top-text {
+  font-size: 199px;
+  color: #666;
+  margin-bottom: 25px;
+  font-family: 'Manrope',sans-serif;
+}
+
+
+.email,
+.password {
+  display: block;
+  text-align: left;
+  font-size: 17px;
+  font-family: 'Manrope',sans-serif;
+  margin-bottom: 12px;
+  margin-top: 15px;
+  color: #6d6c6c;
+  font-weight:300;
+}
+
+ 
+
+input[type="text"],
+input[type="password"] {
+ 
+  font-size: 14px;
+  transition: all 0.3s ease;
+  width: 100%;
+  padding: 12px 14px;
+  margin-top:6px;
+  border-radius: 6px;
+  border:1px solid #cccccf;
+  background: #ffffff;
+}
+
+
+input:focus {
+  outline: none;
+  border-color: #2b2a2a;
+
+  background: #fff;
+}
+
+.login-btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 13px;
+  border-radius: 50px;
+  border: none;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+   font-family: 'Manrope',sans-serif;
+   font-size: 18px;
+  background: #bcbcbc;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(25, 24, 24, 0.3);
+}
+
+
+
+@media screen and (max-width: 1024px) {
+  .main-container {
+    flex-direction: column;
+  }
+
+  /* .left-contain {
+    height: 250px;
+  } */
+
+  .right-container {
+    padding: 30px 20px;
+  }
+}
+
+
+@media screen and (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+  }
+  /* .left-contain {
+    display: block;
+    width: 50%;
+    height: 220px;
+  } 
+  .left-contain img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  } */
+
+  .login-box {
+
+   /* padding: 30px 20px; */
+    border-radius: 16px;
+    text-align: center;
+    background: #ffffff;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  }
+
+  .top-text {
+    font-size: clamp(50px, 12vw, 90px);
+  }
+
+  .style {
+    font-size: 24px;
+  }
+
+  .text {
+    font-size: 14px;
+  }
+
+  .login-btn {
+    font-size: 15px;
+    padding: 12px;
+  }
+}
+
+
