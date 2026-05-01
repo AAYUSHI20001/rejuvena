@@ -109,7 +109,7 @@ const emailRegex =/\S+@\S+\.\S/;
 //     {
 //       email: form.email,
 //       password: form.password
-    
+     
 //   })
 // });
 // const data = await response.json();
@@ -118,7 +118,6 @@ const emailRegex =/\S+@\S+\.\S/;
 //  if(saveUser.email === form.email && saveUser.password ===  form.password){
 //     const token = "abcedfe3fd"
 //    localStorage.setItem("access_token",token)
-
 
 //  if(response.ok && data.access_token){
 
