@@ -21,22 +21,7 @@ function Profile({ session }) {
   useEffect(() => {
     getProfile();
   }, []);
-  useEffect(() => {
-    async function getProfile() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
 
-      const { data } = await supabase
-        .from("users")
-        .select("name, avatar_url")
-        .eq("user_id", user.id)
-        .single();
-
-      if (data) setProfile(data);
-    }
-
-    getProfile();
-  }, []);
   async function getProfile() {
     try {
       setLoading(true);
@@ -166,7 +151,7 @@ function Profile({ session }) {
           </div>
 
           <div className="nav-links">
-            <NavLink to="/dashboard">Home</NavLink>
+            {/* <NavLink to="/dashboard">Home</NavLink> */}
             <NavLink to="/profile">Profile</NavLink>
             <NavLink to="/memberArea">My Courses</NavLink>
           </div>

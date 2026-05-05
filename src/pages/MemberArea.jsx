@@ -128,7 +128,7 @@ const MembersArea = () => {
           </div>
 
           <div className="nav-links">
-            <NavLink to="/dashboard">Home</NavLink>
+            {/* <NavLink to="/dashboard">Home</NavLink> */}
             <NavLink to="/profile">Profile</NavLink>
             <NavLink to="/memberArea">My Courses</NavLink>
           </div>

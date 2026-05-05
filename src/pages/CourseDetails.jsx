@@ -357,7 +357,7 @@ const CourseDetails = () => {
           </div>
 
           <div className="nav-links">
-            <NavLink to="/dashboard">Home</NavLink>
+            {/* <NavLink to="/dashboard">Home</NavLink> */}
             <NavLink to="/profile">Profile</NavLink>
             <NavLink to="/memberArea">My Courses</NavLink>
           </div>
@@ -427,6 +427,7 @@ const CourseDetails = () => {
   <div
     className="progress-fill"
  style={{width :` ${progressPercent}% `}}
+
   ></div>
 </div>
             <div className="stars">
@@ -445,9 +446,11 @@ const CourseDetails = () => {
     if (id === "1" || isUnlocked) {
       navigate(`/course/${id}/lesson/1`);
     } else {
-      handlePayment();
+      handlePayment(); 
     }
+    
   }}
+
 >
   {id === "1"
     ? "Start Learning for Free"

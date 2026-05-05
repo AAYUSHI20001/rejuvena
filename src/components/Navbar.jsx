@@ -60,7 +60,7 @@ function Navbar() {
             <span className="heading">Glowmii  </span>
           </div>
 
-          {/* Hamburger Icon */}
+   
           <div className="menu-icon" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X size={30} /> : <Menu size={30} />}
           </div>
@@ -69,6 +69,7 @@ function Navbar() {
             <NavLink to="/" onClick={closeMenu} style={({ isActive }) => ({ color: isActive ? '#4CE680' : '' })}>
               Courses
             </NavLink>
+           
             {/* <NavLink to="/aidiary" onClick={closeMenu} style={({ isActive }) => ({ color: isActive ? '#4CE680' : '' })}>
               AI Diary
             </NavLink> */}
@@ -82,7 +83,7 @@ function Navbar() {
                   <NavLink to="/memberArea" className="book-btn" onClick={closeMenu}>
                    My Courses
                   </NavLink>
-                  {/* Only show logout in mobile menu if desired, otherwise keep in profile dropdown */}
+              
                   {menuOpen && (
                     <button onClick={handleLogout} className="logout-btn" style={{width: 'auto'}}>
                       <LogOut size={18} /> Logout
@@ -99,7 +100,7 @@ function Navbar() {
         </div>
       </nav>
 
-      {/* Overlay for closing menu when clicking outside */}
+
       {menuOpen && <div className="menu-overlay" onClick={closeMenu} />}
     </>
   );
