@@ -1,9 +1,7 @@
 :root {
   --nav-height: 50px;
 }
-/* body {
-  padding-top: 40px;
-} */
+
 .navbar {
   position: fixed;
   display: flex;
@@ -74,7 +72,7 @@
 }
 
 
-.nav-links a::after{
+/* .nav-links a::after{
   content:"";
   position:absolute;
   left:0;
@@ -83,7 +81,7 @@
   height:2px;
   background:#4CE680;
   transition:0.3s;
-}
+} */
 
 .nav-links a:hover::after{
   width:100%;
@@ -206,7 +204,7 @@ height: 40px;
 }
 
 
-@keyframes dropdownFade {
+/* @keyframes dropdownFade {
   from {
     opacity: 0;
     transform: translateY(-8px);
@@ -215,7 +213,7 @@ height: 40px;
     opacity: 1;
     transform: translateY(0);
   }
-}
+} */
 
 
 .username {
@@ -239,6 +237,7 @@ height: 40px;
   color: #333;
   cursor: pointer;
   transition: all 0.25s ease;
+  font-family:"Manrope",sans-serif;
 }
 
 
@@ -286,7 +285,7 @@ height: 40px;
   .nav-links {
     position: fixed;
     top: 0;
-    right: -100%; /* Hide off-screen */
+    right: -100%; 
     width: 280px;
     height: 100vh;
     background: #F6F8F6;
@@ -298,7 +297,7 @@ height: 40px;
   }
 
   .nav-links.active {
-    right: 0; /* Slide in */
+    right: 0; 
   }
 
   .auth-wrapper {
@@ -308,10 +307,10 @@ height: 40px;
   }
 
   .book-btn {
-    width: 80%; /* Larger touch target for mobile */
+    width: 80%; 
   }
 
-  /* Overlay to dim the background when menu is open */
+
   .menu-overlay {
     position: fixed;
     top: 0;

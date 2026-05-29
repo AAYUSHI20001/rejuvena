@@ -80,12 +80,12 @@ const emailRegex =/\S+@\S+\.\S/;
   toast.success("Login successful!");
 
 
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile } = await supabase
   .from('users')
   .select('*')
   .eq('user_id', data.user.id)
   .maybeSingle();
-
+ 
 // if (profileError) {
 //   console.log(profileError);
 // }
@@ -145,11 +145,15 @@ return(
           <img src="./heroimg.jpg" alt="heroimg" />
              </div>
       <div className='right-container'>
+      <div className='mobile-logo'>
+             <img src="/nav.jpg" alt="glowmii"/>
+              <h2>Glowmii</h2>
+            </div>
    <h1 className="style">Log in</h1>
 
     <form  name ="myForm" action="/submit-page" onSubmit={handleSubmit} method="Post">
     <p className='text'>New to Design Space?<a href="/signup" className='signup-link'>Sign up for free</a></p>
-      <label className="email">Email address<br />
+      <label className="email">Email address  </label>
 
         <input 
         type="text"
@@ -163,9 +167,9 @@ return(
           }}
        required/>
        {error && <p style={{color:'Red'}}>{error}</p>}
-      </label>
-      <br />
-      <label className="password">Password<br />
+    
+     
+      <label className="password">Password  </label>
       <div style={{ position: "relative", width: "100%" }}>
         <input 
        
@@ -186,14 +190,14 @@ return(
        required/> 
   
       <span onClick={togglePasswordVisibilty}
-        style={{position:'absolute',cursor:'pointer',bottom:'42px',right:'1px'}}
+        style={{position:'absolute',cursor:'pointer',bottom:'42px',right: "12px", top: "15px", color: "gray"}}
       >
          {passwordVisible ? <EyeOff size={20}/> : <Eye size={20} />}
       </span>
           </div>
       
-      </label>
-      <br /> 
+     
+  
       <button 
   type="button" 
   onClick={handleForgotPassword} 
@@ -276,6 +280,7 @@ return(
   );
 }    
   export default Login;
+
 
 
 

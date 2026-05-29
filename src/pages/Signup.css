@@ -1,29 +1,31 @@
-
+/* 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
  
-}
-body {
+} */
+ /* body {
   background: #ffffff;
-}
+} */
 .main-container{
   display:flex;
   width:100%;
- min-height:100vh;
-}
+ /* min-height:100vh; */
+} 
 
 .left-contain {
-  display: flex;
-  justify-content: center;
+   display: flex; 
+   justify-content: center; 
   align-items: center;
+  /* height: 100%;  */
 }
 
 .left-contain img {
-  width: 100%;     
+   width: 100%;     
   height: auto;
-  object-fit: contain;
+  object-fit: contain; 
+  /* border-radius: 30px; */
 }
 
 .right-container{
@@ -92,7 +94,7 @@ input:focus {
   .signup-btn{
      padding: 12px;
      width: 40%;
-     margin-top: 25px;
+     /* margin-top: 25px; */
      border-radius: 50px;
      background: #b9b8b8;
     font-family:'Manrope',sans-serif;
@@ -103,7 +105,7 @@ input:focus {
     transition:all 0.3s ease;
   }
   .signup-btn:hover{
-    transform:translateY(-2px);
+    transform :translateY(-2px);
     box-shadow: 0px 10px 25px rgba(0,0,0,0.35);
   }
 .password-text{
@@ -124,6 +126,7 @@ input:focus {
 .link-privacy{
   color: #131413;
   font-weight: 500;
+  margin:3px;
   
 }
 .password-group {
@@ -132,6 +135,9 @@ input:focus {
 
 .password-group input {
   padding-right: 40px;
+}
+.mobile-logo{
+  display: none;
 }
 
 @media screen and (min-width:768px) and (max-width:1024px){
@@ -198,26 +204,48 @@ input:focus {
 
   
   .main-container {
-    display: block;
+    /* display: block; */
     background: #ffffff;
     padding: 20px 16px;
   }
 
   .left-contain {
-    width: 100%;
+    /* width: 100%; */
     /* margin-bottom: 20px; */
+    display: none;
+
+  }
+  .mobile-logo{
+    display: block;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 29px;
   }
 
-  .left-contain img {
-    width: 100%; 
+  .mobile-logo img{
+    width: 112px;
+    height: 87px;
+    align-items: center;
   }
+
+  .mobile-logo h2{
+    margin: 0;
+    font-size: 24px;
+  
+    font-family: 'Manrope',sans-serif;
+    color: #0F172A;
+
+    font-weight: 800;
+  }
+
     .right-container {
     width: 100%;
     padding: 20px 18px;
 
     align-items: center;
   }
-
+ 
   
   .signup-box {
     width: 100%;

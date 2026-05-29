@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import { ChevronLeft, ChevronRight} from 'lucide-react';
+import { ChevronLeft, ChevronRight, Gift } from 'lucide-react';
 import './LessonView.css';
 
 const LessonView = () => {
@@ -9,7 +9,8 @@ const LessonView = () => {
   const navigate = useNavigate();
   const [videoUrl, setVideoUrl] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [completedLessons, setCompletedLessons] = useState([]);
+  const [showModel ,setshowModel]=useState(false);
+  // const [completedLessons, setCompletedLessons] = useState([]);
 
   const videoMapping =  {
     "1":{
@@ -23,7 +24,7 @@ const LessonView = () => {
     "8": "Firefly Morning 5-Minute Wake-up Glow create a video 654207.mp4",
     "9": "lesson-9.mp4",
     "23":"lesson-23.mp4",
-    "24":"lesson-24.mp4",
+    "24":"lesson-24.mp4",       
     "25":"lesson-25.mp4",
     "26":"lesson-26.mp4",
     "14":"lesson-14.mp4",
@@ -32,7 +33,8 @@ const LessonView = () => {
     "28":'lesson-28.mp4',
     "29":'lesson-29.mp4',
     "30":'lesson-30.mp4',
-    "31":'lesson-31.mp4'
+    "31":'lesson-31.mp4',
+    "63":'lesson-63.mp4'
     
    
     },
@@ -108,6 +110,7 @@ const LessonView = () => {
       "11": "Lymphatic Drainage Technique",
       "14": "Forehead Wrinkle Reduction",
       "26":"Spine Alignment Exercise",
+      "63":"Neck Posture",
       "27":"Facial Relaxtion Techniques",
       "28":"Body Stretching",
       "29":"Eye Relaxtion",
@@ -175,7 +178,7 @@ const LessonView = () => {
       7,
       23, 24, 25,
       14, 11,
-      26,
+      26,63,
       27, 28, 29,
       30, 31
     ],
@@ -212,18 +215,15 @@ const LessonView = () => {
     await supabase.from('lesson_progress').upsert([
       {
         user_id: user.id,
-        course_id: String(id),
-        lesson_id: String(lessonId),
+        course_id: Number(id),
+        lesson_id: Number(lessonId),
         completed: true,
       }
     ]);
-  
- 
-    setCompletedLessons((prev) =>
-    prev.includes(Number(lessonId)) ? prev : [...prev, lessonId]
-    );
+
+
   };
-  useEffect(() => {
+  useEffect(() => { 
     const fetchVideo = async () => {
       setLoading(true);
   
@@ -245,44 +245,43 @@ const LessonView = () => {
     fetchVideo();
   }, [id, lessonId]);
 
- 
-  
 
-  useEffect(() => {
-    const fetchProgress = async () => {
-      const user = (await supabase.auth.getUser()).data.user;
-      if (!user) return;
-  
-      const { data } = await supabase
-  .from("lesson_progress")
-  .select("lesson_id")
-  .eq("user_id", user.id)
-  .eq("course_id", String(id)) 
-  .eq("completed", true);
 
-if (data) {
-  setCompletedLessons(data.map(item => Number(item.lesson_id))); 
-}
-    };
-  
-    fetchProgress();
-  }, [id]);
-  
+   const checkCompleted=async()=>{
+     const user = (await supabase.auth.getUser()).data.user;
+     if(!user) return false;
+      const {data , error}= await supabase
+      .from("lesson_progress")
+      .select("lesson_id")
+      .eq("user_id" ,user.id)
+      .eq("course_id",Number(id))
+      .eq("completed",true)
+      if(error){
+        console.log(error);
+        return false;
+      }
+      const totalLessons = lessonOrderMap[id] || [];
+      const completedIds = data.map(item =>Number(item.lesson_id));
+      const allCompleted = totalLessons.every(lesson=>
+        completedIds.includes(Number(lesson))); 
+        return allCompleted;  
+
+   }
   const handleNext = async () => {
     await markLessonComplete();
   
     const currentIndex = lessonOrder.indexOf(Number(lessonId));
-  
-    // if (currentIndex === -1) {
-    //   console.error("Lesson not found in order");
-    //   return;
-    // }
-  
-    const nextLessonId = lessonOrder[currentIndex + 1];
+   const nextLessonId = lessonOrder[currentIndex + 1];
   
     if (nextLessonId) {
       navigate(`/course/${id}/lesson/${nextLessonId}`);
+    }else{
+      const completed = await checkCompleted();
+      if(completed){
+        setshowModel(true);
+      }
     }
+    
   };
   const lessonOrder = lessonOrderMap[id] || [];
 
@@ -292,13 +291,11 @@ if (data) {
         <button onClick={() => navigate(`/course-details/${id}`)} className="back-btn">
           <ChevronLeft size={20} /> Back to Course
         </button>
-        <h3>
+        <h3 style={{fontSize:"25px"}}>
    {currentTitle}
 </h3>
       </div>
-      {/* {completedLessons.includes(lessonId) && (
-  <p className="completed-badge"></p>
-)} */}
+
 
       <div className="main-video-container">
         {loading ? (
@@ -312,26 +309,65 @@ if (data) {
             controlsList="nodownload"
             onEnded={markLessonComplete}
           >
-            <source src={videoUrl} type="video/mp4" />
+            <source src={videoUrl}
+             type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         )}
       </div>
 
       <div className="video-footer">
-        {/* <div className="lesson-info">
-          <h4>Now Playing</h4>
-          <p>Follow the instructions carefully for maximum results.</p>
-        </div> */}
         
-        {lessonOrder.indexOf(Number(lessonId)) < lessonOrder.length - 1 && (
-  <button className="next-lesson-btn" onClick={handleNext}>
+        {lessonOrder.indexOf(Number(lessonId)) < lessonOrder.length - 1  ? (
+  <button className="next-lesson-btn" onClick={handleNext}> 
     Next Lesson <ChevronRight size={18} />
+  </button>
+) : (
+  <button  className ="next-lesson-btn"onClick={async ()=>{
+    await markLessonComplete();
+    const completed = await  checkCompleted();
+    if(completed){
+      setshowModel(true)
+    }
+  }
+  }>
+      Finish Lesson
   </button>
 )}
       </div>
+      {showModel && 
+      (
+        <div className='completion-model'>
+  
+          <div className='model-content'>
+        <div className='confetti'>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        </div>
+            <div className='model-icon'>
+           <Gift className="icons gift" size={100} strokeWidth={2.0} />
+                 </div>
+            <h2>Congrulations!</h2>
+            <p>You have successfully completed the course.</p>
+          
+         
+            <button  className="back-course"onClick={()=>navigate(`/course-details/${id}`)}>
+               Back To Course
+            </button>
+        
+          </div>
+           
+        </div>
+      )}
     </div>
   );
 };
 
 export default LessonView;
+
+
+

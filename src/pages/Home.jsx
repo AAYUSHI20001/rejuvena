@@ -11,9 +11,28 @@ function Home(){
   const[playFullTransformation , setFullTransformation] = useState(false);
   const [activeFaceVideo, setActiveFaceVideo] = useState(null);
   const [activeFaceTag, setActiveFaceTag] = useState('');
-
+  const [courses, setCourses] = useState([]); 
+  const [loading, setLoading] = useState(true);
+  const[session,setSession]= useState(null);
 const [testimonials, setTestimonials] = useState([]);
 const navigate = useNavigate();
+const handleStartTrial=()=>{
+
+    navigate('/signup');
+}
+  const handleLearnMore=()=>{
+    if(session){
+      navigate('/memberArea');
+    }else{
+      navigate('/signup')  ;
+    }
+  }
+  useEffect(() => {
+        supabase.auth.getSession().then(({data :{session}})=>{
+          setSession(session);
+        });
+  }, []);
+  
 const handleStartCourse = async () => {
   const { data } = await supabase.auth.getSession();
 
@@ -59,8 +78,8 @@ const getUrl = (name) => supabase.storage.from('videos').getPublicUrl(name).data
     const { data } = supabase.storage.from('videos').getPublicUrl(fileName);
     return data.publicUrl;
   };
-  const [courses, setCourses] = useState([]); 
-  const [loading, setLoading] = useState(true);
+
+
   useEffect(()=>{
     const fetchCourses = async () => {
       const { data, error } = await supabase
@@ -111,19 +130,17 @@ const getUrl = (name) => supabase.storage.from('videos').getPublicUrl(name).data
     }}><Circle style={{width:"8px",height:"8px",borderRadius:"9999px",color:"#4CE680"}} fill="#4CE680"/> FREE 30-DAY ACCESS</p>
 
     <h1>Glowmii<br/>
-
-
     Your  <span className="highlight">Beauty</span> <br />
     Naturally</h1>
    <p> Unlock radiant skin and a youthful glow with our 
    expert-led DIY natural rejuvenation techniques. Try our 
     main course free for 30 days!  </p>
     <div className='hero-btns'>
-   <button className="hero-btn">
-    <span> < a href = "/signup"style={{textDecoration:"none",color:"black"}}>Start Free Trial </a>
+   <button className="hero-btn" onClick={handleStartTrial}>
+    <span> Start Free Trial
       </span></button>
-   <button className="learn-btn">
-    <span>Learn More
+   <button className="learn-btn" onClick={handleLearnMore}>
+    <span> Learn More
       </span></button>
    </div>
     </div>
@@ -329,7 +346,7 @@ const getUrl = (name) => supabase.storage.from('videos').getPublicUrl(name).data
   </div>
 
   <div className='card-content'>
-    <h3 className='card-title'>Targeted Advanced <br />Focus</h3>
+    <h3 className='card-title'>Targeted Advanced Focus</h3>
     <div className='tag-list' style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
   {Object.keys(faceTutorials).map((tagName) => {
     const isActive = activeFaceTag === tagName;

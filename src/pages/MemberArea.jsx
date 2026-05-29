@@ -9,12 +9,11 @@ const MembersArea = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [profile, setProfile] = useState(null);
   const [unlockedCourses, setUnlockedCourses] = useState([]);
-
+ /*{ NavBar sideIcon profile }*/
   useEffect(() => {
     async function getProfile() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-
       const { data } = await supabase
         .from("users")
         .select("name, avatar_url")
@@ -32,7 +31,24 @@ const MembersArea = () => {
     await supabase.auth.signOut();
     navigate('/');
   };
-
+  useEffect(() => {
+    const fetchPurchases = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+  
+      const { data  } = await supabase
+        .from("purchases")
+        .select("*")
+        .eq("user_id", user.id);
+        
+      if (data) {
+        const courseIds = data.map(item => item.course_id);
+        setUnlockedCourses(courseIds);
+      }
+    };
+  
+    fetchPurchases();
+  }, []);
   const courses = [
     {
       id: 1,
@@ -59,24 +75,6 @@ const MembersArea = () => {
      
     }
   ];
-  useEffect(() => {
-    const fetchPurchases = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-  
-      const { data, error } = await supabase
-        .from("purchases")
-        .select("course_id")
-        .eq("user_id", user.id);
-  
-      if (data) {
-        const courseIds = data.map(item => item.course_id);
-        setUnlockedCourses(courseIds);
-      }
-    };
-  
-    fetchPurchases();
-  }, []);
   const courseContent = {
     "1": [
       1, 2, 3, 4, 5, 6,
@@ -154,7 +152,7 @@ const MembersArea = () => {
 
   {profileOpen && (
     <div className="profile-dropdown">
-      <p>Hello, {profile?.name || "User"}</p>
+      <p className='profile-username'>Hello, {profile?.name || "User"}</p>
       <hr />
       <div className="dropdown-item" onClick={() => navigate("/profile")}>
         Edit Profile
@@ -182,10 +180,11 @@ const MembersArea = () => {
         isUnlocked ? "clickable-card" : "locked-card"
       }`}
       onClick={() => navigate(`/course-details/${course.id}`)}
+  
     >
       <div className="course-thumb">
         <img src={course.image} alt={course.title} />
-
+                                                     
         {!isUnlocked && (
           <div className="course-lock-overlay">
             <Lock size={40} color="#fff" />
@@ -196,7 +195,7 @@ const MembersArea = () => {
       <div className="course-info">
         <div className="course-header">
           <h3>{course.title}</h3>
-          <p className="subtitle">{course.subtitle}</p>
+          <p className="subtitle-1">{course.subtitle}</p>
         </div>
         <span className="lesson-mini">
       {getLessonCount(course.id)} lessons
@@ -219,6 +218,7 @@ const MembersArea = () => {
               className="unlock-btn-v2"
               onClick={(e) => {
                 e.stopPropagation();
+             
                 navigate(`/course-details/${course.id}`);
               }}
             >

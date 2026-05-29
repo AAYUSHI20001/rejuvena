@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import './Navbar.css';
 import { ToastContainer, toast } from "react-toastify";
-import { Menu, X, User, LogOut } from 'lucide-react'; 
+import { Menu, X, LogOut } from 'lucide-react'; 
 import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 
@@ -10,36 +10,36 @@ function Navbar() {
   const [session, setSession] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profile, setProfile] = useState(null);
+ const closeMenu = () => setMenuOpen(false);
 
-  const closeMenu = () => setMenuOpen(false);
-
+ /*{ authentication tracking session after user login}*/
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(({data}) => {
       setSession(data.session);
     });
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+     const {data:listener} = supabase.auth.onAuthStateChange((_event, session) =>{
       setSession(session);
-    });
-
+     });
+  
     return () => listener.subscription.unsubscribe();
   }, []);
+  
 
-  useEffect(() => {
-    async function getProfile() {
-      if (!session?.user) return;
+  // useEffect(() => {
+  //   async function getProfile() {
+  //     if (!session?.user) return;
 
-      const { data } = await supabase
-        .from("users")
-        .select("name, avatar_url")
-        .eq("user_id", session.user.id)
-        .single();
+  //     const { data } = await supabase
+  //       .from("users")
+  //       .select("name, avatar_url")
+  //       .eq("user_id", session.user.id)
+  //       .single();
 
-      if (data) setProfile(data);
-    }
+  //     if (data) setProfile(data);
+  //   }
 
-    getProfile();
-  }, [session]);
+  //   getProfile();
+  // }, [session]); 
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -59,10 +59,8 @@ function Navbar() {
             <img src='/nav.jpg' className="logo" alt="logo" />
             <span className="heading">Glowmii  </span>
           </div>
-
-   
-          <div className="menu-icon" onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <X size={30} /> : <Menu size={30} />}
+          <div className="menu-icon" onClick={()=>setMenuOpen(!menuOpen)}>
+            {menuOpen ? <X size={30} /> : <Menu size={30}/>}
           </div>
 
           <div className={`nav-links ${menuOpen ? "active" : ""}`}>

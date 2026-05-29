@@ -1,25 +1,29 @@
-import { useEffect, useState } from "react";
+import { useEffect,  useRef,  useState } from "react";
 import { supabase } from "../supabaseClient";
 import { ToastContainer, toast } from "react-toastify";
 import { NavLink, useNavigate } from "react-router-dom";
 import 'react-toastify/dist/ReactToastify.css'; 
 import './Profile.css';
-import { PencilLine, User } from "lucide-react";
+import { Pencil, User ,UserRound , Mail,Phone , MapPinCheckInside ,Building2 ,UserCheck, Calendar ,Layers, BadgeCheck} from "lucide-react";
 
-function Profile({ session }) {
+function Profile() {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState('');
-  const [age, setAge] = useState('');
   const [email, setEmail] = useState('');
-  const[gender , setGender]=useState('');
- 
   const[phone , setPhone]=useState('');
+  const[address ,setAddress]=useState('');
+  const[birth , setBirth] = useState('');
+  const[city , setCity]=useState('');
+  const[plan, setPlan]=useState('');
+  const[userName,setUserName]=useState('');
   const [avatarUrl, setAvatarUrl] = useState("");
   const [profile, setProfile] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const navigate = useNavigate();
+  const dateRef = useRef(null); /*{ useRef used  directly access to dom element i have used for birthdate input in database it fetch string
+                    in ISO format date with time and html input access only date so i have set as date remove time portion }*/
   useEffect(() => {
-    getProfile();
+    getProfile();   
   }, []);
 
   async function getProfile() {
@@ -29,19 +33,26 @@ function Profile({ session }) {
 
       if (user) {
         setEmail(user.email);
+        // setName(user.name);
         
-        let { data, error } = await supabase
+        let { data  } = await supabase
           .from('users')
-          .select('name, age, avatar_url,phone ,gender')
+          .select('name, avatar_url,phone ,user_name,address,birth,city,plan')
           .eq('user_id', user.id)
-          .single();
-
+          .maybeSingle();
+  
         if (data) {
+        
           setName(data.name || '');
-          setAge(data.age || '');
           setPhone(data.phone || '');
-          setGender(data.gender || '');
+          setUserName(data.user_name || '');
+          setAddress(data.address || '');
+          setBirth(data.birth ? data.birth.split("T")[0] : "");
+          setCity(data.city || '');
+          setPlan(data.plan || '');
           setAvatarUrl(data.avatar_url ?? "");
+           setProfile(data);
+
         }
       }
     } catch (error) {
@@ -60,22 +71,25 @@ function Profile({ session }) {
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      // if (!user) throw new Error("No user logged in");
 
       const updates = {
         user_id: user.id, 
         name: name,
-        age: age ? parseInt(age) : null,
         phone : phone ,
+        user_name:userName,
+        address:address,
         email: email,
-        gender:gender,
+        birth: birth || null,
+        city : city,
+        plan:plan,
         avatar_url: avatarUrl, 
       };
 
     
       let { error } = await supabase
         .from('users')
-        .upsert(updates, { onConflict: 'user_id' });
+        .update(updates) 
+        .eq("user_id",user.id)
 
       if (error) throw error;
       toast.success('Profile updated successfully!');
@@ -85,60 +99,41 @@ function Profile({ session }) {
       setLoading(false);
     }
   }
-
   async function uploadAvatar(e) {
     try {
       const file = e.target.files[0];
+  
       if (!file) return;
-      
-      setLoading(true); 
-      const { data: { user } } = await supabase.auth.getUser();
   
-      const fileExt = file.name.split(".").pop();
-      const filePath = `${user.id}.${fileExt}`;
+      const {data: { user } } = await supabase.auth.getUser();
   
+      const filePath = `${user.id}/${file.name}`;
   
-      const { error: uploadError } = await supabase.storage
+      const { error } = await supabase.storage
         .from("avatars")
         .upload(filePath, file, {
-          cacheControl: "3600",
           upsert: true,
         });
-  
-      if (uploadError) throw uploadError;
-  
-     
-      const { data } = supabase.storage
+     if (error) throw error;
+     const { data } = supabase.storage
         .from("avatars")
         .getPublicUrl(filePath);
   
-      const publicUrl = `${data.publicUrl}?t=${Date.now()}`;
+      setAvatarUrl(data.publicUrl);
   
-   
-      setAvatarUrl(publicUrl);
-  
-    
-      const { error: dbError } = await supabase
-        .from("users")
-        .upsert({
-          user_id: user.id,
-          avatar_url: publicUrl,
-          email: user.email, 
-          phone:user.phone,
-          gender:user.gender
-        }, { onConflict: 'user_id' }); 
-  
-      if (dbError) throw dbError;
-  
-      toast.success("Profile image updated!");
+       const {error : updateError} = await supabase
+       .from("users")
+       .update({
+           avatar_url:data.publicUrl
+       })
+       .eq("user_id",user.id);
+       if(updateError) 
+       throw updateError;
+      toast.success("Profile Image Uploaded!");
     } catch (err) {
-      console.error(err);
       toast.error(err.message);
-    } finally {
-      setLoading(false);
     }
   }
-
   return (
     <div className="profile">
       <ToastContainer position="top-right" autoClose={2000} />
@@ -178,7 +173,7 @@ function Profile({ session }) {
 
   {profileOpen && (
     <div className="profile-dropdown">
-      <p>Hello, {profile?.name || "User"}</p>
+      <p className="profile-username">Hello, {profile?.name || "User"}</p>
       <hr />
       <div  className="dropdown-item"  onClick={() => navigate("/profile")}>
         Edit Profile
@@ -192,26 +187,23 @@ function Profile({ session }) {
 
 </div>
       </nav>
+  
       <div className="profile-page">
-      <div className="profile-layout">
-  
-      
-      <div className="profile-top">
-
-  
+     <div className="profile-layout">
+     <div className="profile-top">
+     <div className="profile-top-bg"> 
   <div className="avatar-ring">
     <div className="avatar-wrapper big">
       <img
         src={avatarUrl || "/default-avatar.png"}
-        alt="profile"
+        alt= "Profile"
         className="avatar-img"
-       
-      />
+          />
     </div>
   </div>
 
   <label htmlFor="avatarInput" className="change-photo-btn" >
- <PencilLine  />
+ <Pencil size={20}/>  <div className="edit-profile"> Edit Profile</div>
   </label>
   <input
     type="file"
@@ -222,86 +214,159 @@ function Profile({ session }) {
     style={{ display: "none" }} 
   />
 </div>
-  
-     
-        <div className="profile-right">
-          <h2>User Profile</h2>
-          <p className="subtitle">Update your details</p>
-  
-          <form onSubmit={handleSave}>
-  
-            <div className="input-group">
-              <label>Email*</label>
-              <input type="text" value={email} disabled />
-            </div>
-  
-            <div className="input-group">
-              <label>Full Name*</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter your name"
-                required
-              />
-            </div>
-            <div className="input-group">
-              <label>Phone Number*</label>
-              <input
-                type="number"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Enter your phone number"
-                required
-              />
-            </div>
-  
-            <div className="input-group">
-              <label>Age*</label>
-              <input
-                type="number"
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-                placeholder="Enter your age"
-                required
-              />
-            </div>
-            <div className="input-group gender-group">
-  <label>Please Select Your Gender*</label>
-  
-  {/* <div className="radio-options"> */}
-    <div className="radio-item">
-      <input 
-        type="radio" 
-        name="gender" 
-        value={gender} 
-        onChange={(e) => setGender(e.target.value)} 
-        required
-      />
-      <label htmlFor="male">Male</label>
-    
-    </div>
+     </div>  
+     <div className="profile-right">
 
-    <div className="radio-item">
-      <input 
-        type="radio" 
-        name="gender" 
-        value={gender}
-        onChange={(e) => setGender(e.target.value)} 
-        required
-      />
-      <label htmlFor="female">Female</label>
-    </div>
-  {/* </div> */}
+    <div className="profile-heading">
+      <h2>{profile?.name || "User"}</h2>
+
+       <span className="verified-text">
+             <BadgeCheck size={12} /> Verified Profile
+              </span>
+            </div>
+             <div className="profile-details">
+              <div className="subtitle-wrapper">
+              <p className="subtitle">Profile details </p>  
+            <span className="subtitle-edit"> <Pencil size={13}/>Edit</span>
+              </div>
+   
+      
+ 
+       <form onSubmit={handleSave} className="profile-form">
+        {/* <div className="profile-form">  */}
+          <div className="input-group">
+  <div className="input-group-icons">
+    <UserRound  />
+  </div>
+
+  <div className="input-content">
+    <label>Full Name</label>
+
+    <input
+      type="text"
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+      required
+    />
+  </div>
 </div>
   
-          
-  
-  
-            <button type="submit" className="save-btn" disabled={loading}>
+            <div className="input-group">
+            <div className="input-group-icons">
+            <Mail  />
+            </div>
+                <div className="input-content">
+              <label> Email</label>
+              <input type="text" value={email} 
+              onChange={(e)=>setEmail(e.target.value)} />
+                  </div>
+            </div>
+            <div className="input-group">
+      
+      <div className="input-group-icons" >
+        <Calendar  onClick={()=>dateRef.current?.showPicker()}
+           style={{cursor:"pointer"}}/>
+
+      </div>
+
+      <div className="input-content">
+        <label>Date of Birth</label>
+           <input
+           ref={dateRef}
+          type="date"
+          className="date-input"
+          value={birth || ""}
+          onChange={(e)=>setBirth(e.target.value)}
+
+        />
+      </div>
+    </div>
+            <div className="input-group">
+            <div className="input-group-icons">
+               <UserCheck  />
+               </div>
+               <div className="input-content"> 
+              <label>Username</label> 
+              <input
+                type="text"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                // placeholder="Enter your age"
+                required
+              />
+                </div>
+            </div>
+            <div className="input-group">
+           < div className="input-group-icons">
+               <Phone  />
+               </div>
+               <div className="input-content"> 
+              <label>Phone Number</label>
+              <input
+                type="text"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                // placeholder="Enter your phone number"
+                required
+              />
+              </div>
+            </div>
+            <div className="input-group">
+            <div className="input-group-icons">
+               <Layers  />
+               </div>
+               <div className="input-content"> 
+              <label>Plan</label>
+              <input
+                type="text"
+                value={plan}
+                onChange={(e) => setPlan(e.target.value)}
+                // placeholder="Enter your phone number"
+                required
+              />
+              </div>
+            </div>
+            <div className="input-group ">
+            <div className="input-group-icons">
+               <MapPinCheckInside  />
+               </div>
+               <div className="input-content"> 
+               <label> Address</label>
+               <input
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                // placeholder="Enter your age"
+                required
+              />
+              </div>
+                 </div>
+             <div className="input-group">
+             <div className="input-group-icons">
+               <Building2 />
+               </div>
+               <div className="input-content"> 
+                 <label>City</label>
+                   <input
+                type="text"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                // placeholder="Enter your age"
+                required
+              />
+              </div>
+                   </div>
+                   <div className="save-btn-wrapper">
+                   <button type="submit" className="save-btn" disabled={loading}>
               {loading ? "Processing..." : "Save Profile"}
-            </button>
-          </form>
+            </button> 
+               </div>
+               {/* </div>      */}
+
+          </form> 
+        
+          </div>
+        
         </div>
   
       </div>
@@ -310,4 +375,10 @@ function Profile({ session }) {
   );
 }
 
-export default Profile;
+   export default Profile;
+
+
+
+
+
+

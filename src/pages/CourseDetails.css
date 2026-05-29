@@ -273,6 +273,9 @@
     border-radius: 10px;
     transition: width 0.4s ease;
   }
+  .profile-username{
+    padding: 0px 15px;
+  }
   
   @keyframes fadeIn {
     from {

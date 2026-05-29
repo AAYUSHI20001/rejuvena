@@ -45,6 +45,7 @@ const[passwordVisible,setPasswordVisible]=useState(false);
     const {data ,error} =  await supabase.auth.signUp({ 
        email : form.email ,
       password:form.password,
+      name:form.name,
       options:{
          emailRedirectTo : window.location.origin + "/login",
          data:{
@@ -63,7 +64,8 @@ const { error: dbError } = await supabase
   {
     user_id: data.user.id,       
     email: data.user.email,
-    // name: form.name,
+
+    name: form.name,
   },
 ], { onConflict: 'email' }); 
     
@@ -125,6 +127,10 @@ const { error: dbError } = await supabase
  
 </div>
           <div className='right-container'>
+            <div className='mobile-logo'>
+             <img src="/nav.jpg" alt="glowmii"/>
+              <h2>Glowmii</h2>
+            </div>
             <h1>Create an account</h1>
             <p className='top-link'>Already have an account?
             <a href='/login' className='login-link'>Log in</a>
@@ -149,7 +155,7 @@ const { error: dbError } = await supabase
   <label className="email">Email address</label>
   <input
     type="email"
-    value={form.email}
+    value={form.email}   
     onChange={e => {
       setForm({ ...form, email: e.target.value });
       setError({ ...error, email: "" });
@@ -170,14 +176,14 @@ const { error: dbError } = await supabase
       }}
       required
     />
-    <span onClick={togglePasswordVisibility} style={{ cursor: "pointer", position: "absolute", right: "12px", top: "10px", color: "gray" }}>
+    <span onClick={togglePasswordVisibility} style={{ cursor: "pointer", position: "absolute", right: "12px", top: "15px", color: "gray" }}>
       {passwordVisible ? <EyeOff size={20}/> : <Eye size={20} />}
     </span>
   </div>
   {error.password && <p style={{ color: "red", fontSize: "15px" }}>{error.password}</p>}
 </div>
                 <p className='password-text'>Use 8 or more characters with a mix of letters , numbers & symbols</p>
-                <p className='link-text'>By creating an account you agree to our<br />
+                <p className='link-text'>By creating an account you agree to our 
                  <a href="#"className="link-term">Terms of use</a> and <a href="#"className='link-privacy'>Privacy Policy</a></p>
                    
                 
@@ -198,3 +204,4 @@ const { error: dbError } = await supabase
 }
 
 export default Signup;
+

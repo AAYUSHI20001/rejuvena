@@ -13,25 +13,38 @@ const CourseDetails = () => {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [openSection, setOpenSection] = useState(null);
   const [completedLessons, setCompletedLessons] = useState([]);
+  // const [showModel,setshowModel]=useState(false);
    const navigate =useNavigate();
    useEffect(() => {
     checkPurchase();
   }, [id]); 
-                     
+
+     
+      /* { purchase} */                  
   const checkPurchase = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
   
-    const { data } = await supabase
+    const { data ,error} = await supabase
       .from("purchases")
       .select("*")
       .eq("user_id", user.id)   
       .eq("course_id", Number(id))
-      .maybeSingle();
-  
+      .maybeSingle(); 
+   
+        /*  Returns:
+      - object when exactly 1 row is found
+      - null when no row is found
+      - error when multiple rows are found
+      -If one purchase exists, give me one object.
+      -If no purchase exists, give me null
+         */ 
+      
     setIsUnlocked(!!data);
   };
-
+ 
+ 
+   /* { navbar side  profile menu icon } */
   useEffect(() => {
     async function getProfile() {
       const { data: { user } } = await supabase.auth.getUser();
@@ -41,13 +54,20 @@ const CourseDetails = () => {
         .from("users")
         .select("name, avatar_url")
         .eq("user_id", user.id)
-        .single();
-
-      if (data) setProfile(data);
+        .single();  
+         /* Returns:
+      - object when exactly 1 row is found
+      - error when no row is found
+      - error when multiple rows are found
+   */ 
+      
+     if (data) 
+      setProfile(data);
     }
 
     getProfile();
   }, []);
+
   useEffect(() => {
     const fetchProgress = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -130,7 +150,7 @@ const CourseDetails = () => {
       sectionTitle:"Posture and Alignment Yoga",
       lessons :[
         {id:26 ,title:"Spine Alignment Exercise",free:true},
-        {id:6, title:"Neck Posture",free:true}
+        {id:63, title:"Neck Posture",free:true}
        ]
     },
     {
@@ -303,7 +323,7 @@ const CourseDetails = () => {
     const { data } = supabase
       .storage
       .from('avatars')
-      .getPublicUrl(currentCourse.imageName);
+      .getPublicUrl(currentCourse.imageName);  
 
     if (data) {
       setImageUrl(data.publicUrl);
@@ -323,26 +343,27 @@ const CourseDetails = () => {
       handler: async function () {
         toast.success("Payment Successful");
       
-        // const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user } } = await supabase.auth.getUser();
       
         await supabase.from("purchases").upsert([
           {
-           
+             user_id : user.id,
             course_id: Number(id)
           }
         ]);
       
+        
         setIsUnlocked(true);
       
 
         setTimeout(() => {
-          navigate(`/course-details/${id}`);
+          navigate(`/memberArea`);
         }, 1500);
       }
    };
     const rzp = new window.Razorpay(options);
     rzp.open();
-  };
+  }; 
  
 
   return (
@@ -384,7 +405,7 @@ const CourseDetails = () => {
 
   {profileOpen && (
     <div className="profile-dropdown">
-      <p>Hello, {profile?.name || "User"}</p>
+      <p className='profile-username'>Hello, {profile?.name || "User"}</p>
       <hr />
       <div  className="dropdown-item"  onClick={() => navigate("/profile")}>
         Edit Profile
