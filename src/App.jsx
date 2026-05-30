@@ -13,8 +13,6 @@ import LessonView from './pages/LessonView';
 
 function MainLayout({ session }) {
   const location = useLocation();
-
-
   const hideNavbarPaths = [ '/memberArea', '/course-details','/LessonView','/profile'];
   const shouldHideNavbar = hideNavbarPaths.some(path => location.pathname.startsWith(path));
 
